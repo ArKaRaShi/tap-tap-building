@@ -1,0 +1,46 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	width: 100vw;
+	height: 100vh;
+	background-color: gainsboro;
+}
+
+main {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.core {
+	width: 100%;
+	height: 100%;
+	padding: 0 0 1px 0;
+	display: grid;
+	grid-template-rows: repeat(6, 1fr);
+	grid-template-columns: repeat(10, 1fr);
+}
+
+.in-core-box {
+	width: 100%;
+	height: 100%;
+}
+
+.canvas {
+	width: 100%;
+	height: 100%;
+}
+
+.sky {
+	background-color: #87CEEB;
+}
+
+.earth {
+	background-color: #8B4513;
+}
