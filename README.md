@@ -1,2 +1,2 @@
-# tap-tap-building
+# Tap tap building
 Just a tap game.
