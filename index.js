@@ -848,6 +848,7 @@ class GameDriver {
 			const parentComponnent = document.querySelector(parentSelector);
 			for (let i = 0; i < quantity; i++) {
 				let component = document.createElement(newElementTag);
+				component.style.webkitTouchCallout = "none";
 				if (callback && makeId) {
 					callback(component, i);
 				} else if (callback) {
