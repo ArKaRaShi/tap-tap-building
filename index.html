@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Tap tap build</title>
 		<link
 			href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
@@ -12,10 +12,20 @@
 	</head>
 	<body>
 		<main></main>
-		<script>
-		  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-		</script>
-		<script defer src="/_vercel/insights/script.js"></script>
 		<script src="index.js"></script>
+		<script>
+			let lastTouchEnd = 0;
+			document.addEventListener(
+				"touchend",
+				function (event) {
+					const now = new Date().getTime();
+					if (now - lastTouchEnd <= 300) {
+						event.preventDefault();
+					}
+					lastTouchEnd = now;
+				},
+				false
+			);
+		</script>
 	</body>
 </html>
