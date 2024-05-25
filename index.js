@@ -917,7 +917,6 @@ class GameDriver {
 
 	getRandomObject() {
 		this.tmpObject = this.objectMananger.randomObject();
-		console.log(this.tmpObject);
 		this.tmpObject.startX =
 			Random.dynamicRandom(
 				this.randomFactor * this.randomFactor,
@@ -1170,7 +1169,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			game.increaseTap(1);
 			game.drawObjectComponent();
 			// game.updateTotalRectText();
-			console.log(game.getConstructingProgress());
+			// console.log(game.getConstructingProgress());
 			if (game.buildObjectComplete()) {
 				game.memorizePlacement();
 				game.changeState(1);
