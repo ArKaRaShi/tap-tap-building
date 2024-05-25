@@ -848,7 +848,6 @@ class GameDriver {
 			const parentComponnent = document.querySelector(parentSelector);
 			for (let i = 0; i < quantity; i++) {
 				let component = document.createElement(newElementTag);
-				component.style.webkitTouchCallout = "none";
 				if (callback && makeId) {
 					callback(component, i);
 				} else if (callback) {
@@ -860,6 +859,7 @@ class GameDriver {
 
 		createAndAppendElement("main", "div", 1, false, (each) => {
 			each.classList.add("core");
+			each.style.webkitTouchCallout = "none";
 			each.style.gridTemplateRows = `repeat(${this.coreRow}, 1fr)`;
 			each.style.gridTemplateColumns = `repeat(${this.coreColumn}, 1fr)`;
 		});
@@ -874,6 +874,7 @@ class GameDriver {
 					uniqueIterator / this.coreColumn
 				)}-${uniqueIterator % this.coreColumn}`;
 				each.classList.add("sky", "in-core-box");
+				each.style.webkitTouchCallout = "none";
 			}
 		);
 
@@ -893,11 +894,13 @@ class GameDriver {
 			false,
 			(each) => {
 				each.classList.add("earth", "in-core-box");
+				each.style.webkitTouchCallout = "none";
 				earthGroundLayerColors.forEach((color) => {
 					let component = document.createElement("div");
 					component.classList.add("in-core-box");
 					component.style.height = layerHeightPercent;
 					component.style.backgroundColor = color;
+					component.style.webkitTouchCallout = "none";
 					each.appendChild(component);
 				});
 			}
@@ -911,6 +914,7 @@ class GameDriver {
 			false,
 			(each) => {
 				each.classList.add("earth", "in-core-box");
+				each.style.webkitTouchCallout = "none";
 			}
 		);
 	}
