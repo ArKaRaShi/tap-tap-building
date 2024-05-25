@@ -1170,7 +1170,6 @@ class GameDriver {
 			overlay.id = "summary-overlay";
 			overlay.addEventListener("click", (Event) => {
 				if (Event.target == overlay) {
-					console.log(Event);
 					const summary = document.querySelector("#summary-popup");
 					summary.style.display = "none";
 					overlay.style.display = "none";
@@ -1250,32 +1249,47 @@ class GameDriver {
 	setup() {
 		this.setTheme("minimal");
 		this.buildWorld();
-		this.playGuide();
 	}
 
 	runMobile() {
+		let firstTimePlayGuide = true;
+		let correctAxis;
 		this.setup();
+
 		setInterval(() => {
-			console.log("checking");
+			console.log("checking", firstTimePlayGuide);
 			if (screen.width > screen.height) {
+				correctAxis = true;
 				this.removeAxisGuide();
+				if (firstTimePlayGuide) {
+					this.playGuide();
+				}
 			} else {
+				correctAxis = false;
+				const playGuide = document.querySelector("#playGuide-overlay");
+				if (playGuide) {
+					this.removePlayGuide();
+				}
 				this.axisGuide();
 			}
 		}, 500);
 
-
-		let holdThreshold = 1000; // Define the duration threshold in milliseconds for a hold
-		let holdStart;
 		let intervalID;
 		document.addEventListener("touchstart", (Event) => {
-			console.log("start");
-			holdStart = Date.now(); // Record the start time of touch
-			console.log(Event);
-			intervalID = setInterval(() => {
-				console.log("running");
-				this.handleEvent(Event);
-			}, 500);
+			if (!firstTimePlayGuide && correctAxis) {
+				intervalID = setInterval(() => {
+					console.log("running");
+					this.handleEvent(Event);
+				}, 200);
+			}
+
+			const playGuide = document.querySelector("#playGuide-overlay");
+			if (playGuide) {
+				if (Event.target == playGuide) {
+					this.removePlayGuide();
+					firstTimePlayGuide = false;
+				}
+			}
 		});
 
 		document.addEventListener("touchmove", (Event) => {
@@ -1284,17 +1298,12 @@ class GameDriver {
 
 		document.addEventListener("touchend", (Event) => {
 			clearInterval(intervalID); // Clear the interval
-			console.log("wat");
-			let holdTime = Date.now() - holdStart; // Calculate the duration of touch
-			if (holdTime >= holdThreshold) {
-				console.log("Hold event detected!");
-				// Add your code here to handle the hold event
-			}
 		});
 	}
 
 	runPC() {
 		this.setup();
+		this.playGuide();
 		document.addEventListener("click", (Event) => {
 			this.handleEvent(Event);
 		});
@@ -1323,7 +1332,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		coreColumn: 13,
 		skyBoxRatio: 2,
 		earthBoxRatio: 1,
-		buildSpeed: 2,
+		buildSpeed: 200,
 	};
 
 	if (isMobileDevice()) {
