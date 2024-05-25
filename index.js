@@ -1276,12 +1276,14 @@ class GameDriver {
 		}, 500);
 
 		let intervalID;
+		let holdStart = 0;
 		document.addEventListener("touchstart", (Event) => {
 			if (!firstTimePlayGuide && correctAxis) {
 				intervalID = setInterval(() => {
 					this.handleEvent(Event);
 				}, 400);
 			}
+			holdStart = Date.now(); // Record the timestamp when touch start
 
 			const playGuide = document.querySelector("#playGuide-overlay");
 			if (playGuide) {
@@ -1299,6 +1301,11 @@ class GameDriver {
 
 		document.addEventListener("touchend", (Event) => {
 			clearInterval(intervalID); // Clear the interval
+			const holdTime = Date.now() - holdStart;
+			if (holdTime >= 200) {
+				// Adjust the threshold as needed
+				Event.preventDefault(); // Prevent default behavior if touch was held
+			}
 		});
 	}
 
