@@ -1280,7 +1280,7 @@ class GameDriver {
 				intervalID = setInterval(() => {
 					console.log("running");
 					this.handleEvent(Event);
-				}, 200);
+				}, 400);
 			}
 
 			const playGuide = document.querySelector("#playGuide-overlay");
@@ -1332,7 +1332,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		coreColumn: 13,
 		skyBoxRatio: 2,
 		earthBoxRatio: 1,
-		buildSpeed: 200,
+		buildSpeed: 2,
 	};
 
 	if (isMobileDevice()) {
