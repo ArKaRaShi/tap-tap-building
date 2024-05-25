@@ -1,5 +1,3 @@
-const defaultIndexOffset = 1;
-
 class Theme {
 	static getPallete(theme) {
 		if (theme === "minimal") {
@@ -1292,6 +1290,7 @@ class GameDriver {
 					firstTimePlayGuide = false;
 				}
 			}
+			Event.preventDefault();
 		});
 
 		document.addEventListener("touchmove", (Event) => {
