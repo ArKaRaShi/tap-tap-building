@@ -22,8 +22,7 @@
 		            if (now - lastTouchEnd <= delay) {
 		                event.preventDefault(); // Prevent default action if touch events are too close
 		            }
-		            lastTouchEnd = now;
-		        }, false);
+		        }, { passive: false });
 		
 		        document.addEventListener('touchend', function(event) {
 		            const now = new Date().getTime();
@@ -31,7 +30,7 @@
 		                event.preventDefault(); // Prevent default action if touch events are too close
 		            }
 		            lastTouchEnd = now;
-		        }, false);
+		        }, { passive: false });
 		</script>
 	</body>
 </html>
