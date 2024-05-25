@@ -1256,9 +1256,12 @@ class GameDriver {
 		let correctAxis;
 		this.setup();
 
+		const core = document.querySelector(".core");
+		let width, height;
 		setInterval(() => {
-			console.log("checking", firstTimePlayGuide);
-			if (screen.width > screen.height) {
+			width = core.offsetWidth;
+			height = core.offsetHeight;
+			if (width > height) {
 				correctAxis = true;
 				this.removeAxisGuide();
 				if (firstTimePlayGuide) {
@@ -1280,7 +1283,7 @@ class GameDriver {
 				intervalID = setInterval(() => {
 					console.log("running");
 					this.handleEvent(Event);
-				}, 400);
+				}, 200);
 			}
 
 			const playGuide = document.querySelector("#playGuide-overlay");
@@ -1332,7 +1335,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		coreColumn: 13,
 		skyBoxRatio: 2,
 		earthBoxRatio: 1,
-		buildSpeed: 2,
+		buildSpeed: 200,
 	};
 
 	if (isMobileDevice()) {
