@@ -817,6 +817,7 @@ class GameDriver {
 	countRandom;
 
 	constructor(property) {
+		this.mobile = property.mobile;
 		this.randomFactor = property.randomFactor;
 		this.gameBits = property.gameBits;
 		this.coreRow = property.coreRow;
@@ -1074,52 +1075,126 @@ class GameDriver {
 		).toFixed(2)}%`;
 	}
 
-	summarize() {
-		const createElement = (property) => {
-			const component = document.createElement(property.tag);
-			if ("id" in property) {
-				component.id = property.id;
-			}
-			if ("classArray" in property) {
-				property.classArray.forEach((each) =>
-					component.classList.add(each)
-				);
-			}
-			if ("textContent" in property) {
-				component.textContent = property.textContent;
-			}
-			return component;
-		};
+	createOverlay() {
+		const overlay = document.createElement("div");
+		overlay.classList.add("overlay");
+		return overlay;
+	}
 
+	createElement(property) {
+		const component = document.createElement(property.tag);
+		if ("id" in property) {
+			component.id = property.id;
+		}
+		if ("classArray" in property) {
+			property.classArray.forEach((each) =>
+				component.classList.add(each)
+			);
+		}
+		if ("textContent" in property) {
+			component.textContent = property.textContent;
+		}
+		return component;
+	}
+
+	playGuide() {
 		const parent = document.querySelector("main");
-		let overlay = document.querySelector(".overlay");
+		let overlay = document.querySelector("#playGuide-overlay");
+		let guide = document.querySelector("#playGuide-popup");
+		if (!overlay) {
+			overlay = this.createOverlay();
+			overlay.id = "playGuide-overlay";
+			parent.appendChild(overlay);
+		}
+		if (!guide) {
+			guide = this.createElement({
+				tag: "div",
+				classArray: ["popup"],
+				id: "playGuide-popup",
+			});
+			const p1 = this.createElement({
+				tag: "p",
+				classArray: ["b-text"],
+				textContent: this.mobile ? "Hold to play!" : "Click to play!",
+			});
+			guide.appendChild(p1);
+			parent.appendChild(guide);
+		}
+	}
+
+	removePlayGuide() {
+		const overlay = document.querySelector("#playGuide-overlay");
+		const guide = document.querySelector("#playGuide-popup");
+		if (overlay) overlay.parentNode.removeChild(overlay);
+		if (guide) guide.parentNode.removeChild(guide);
+	}
+
+	axisGuide() {
+		const parent = document.querySelector("main");
+		let overlay = document.querySelector("#axisGuide-overlay");
+		let guide = document.querySelector("#axisGuide-popup");
+		if (!overlay) {
+			overlay = this.createOverlay();
+			overlay.id = "axisGuide-overlay";
+			parent.appendChild(overlay);
+		}
+		if (!guide) {
+			guide = this.createElement({
+				tag: "div",
+				classArray: ["popup"],
+				id: "axisGuide-popup",
+			});
+			const p1 = this.createElement({
+				tag: "p",
+				classArray: ["b-text"],
+				textContent: "Play in horizontal",
+			});
+			guide.appendChild(p1);
+			parent.appendChild(guide);
+		}
+	}
+
+	removeAxisGuide() {
+		const overlay = document.querySelector("#axisGuide-overlay");
+		const guide = document.querySelector("#axisGuide-popup");
+		if (overlay) overlay.parentNode.removeChild(overlay);
+		if (guide) guide.parentNode.removeChild(guide);
+	}
+
+	summarize() {
+		const parent = document.querySelector("main");
+		let overlay = document.querySelector("#summary-overlay");
 		let summary = document.querySelector("#summary-popup");
 		if (!overlay) {
-			overlay = createElement({ tag: "div", classArray: ["overlay"] });
+			overlay = this.createOverlay();
+			overlay.id = "summary-overlay";
 			overlay.addEventListener("click", (Event) => {
 				if (Event.target == overlay) {
 					console.log(Event);
 					const summary = document.querySelector("#summary-popup");
 					summary.style.display = "none";
 					overlay.style.display = "none";
-					this.state = 3;
 				}
 			});
 			parent.appendChild(overlay);
 		}
 		if (!summary) {
-			summary = createElement({ tag: "div", id: "summary-popup" });
-			const p1 = createElement({
+			summary = this.createElement({
+				tag: "div",
+				classArray: ["popup"],
+				id: "summary-popup",
+			});
+			const p1 = this.createElement({
 				tag: "p",
 				classArray: ["b-text"],
 				textContent: "You got a big town!",
 			});
-			const p2 = createElement({
+			const p2 = this.createElement({
 				tag: "p",
 				classArray: ["n-text"],
 				textContent: `Total tap: ${this.totalTap}`,
 			});
-			const p3 = createElement({
+			const p3 = this.createElement({
 				tag: "p",
 				classArray: ["n-text"],
 				textContent: `Total box build: ${this.totalRectBuild}`,
@@ -1136,10 +1211,112 @@ class GameDriver {
 	increaseTap(value) {
 		this.totalTap += value;
 	}
+
+	handleEvent(Event) {
+		if (this.state == 0) {
+			this.removePlayGuide();
+			this.changeState(1);
+		} else if (this.state == 1) {
+			if (!this.isConstructing()) {
+				this.getRandomObject();
+				this.resetCountRandom();
+				while (!this.canPlace()) {
+					this.getRandomObject();
+					if (this.increaseAndCheckMaxRandom()) {
+						this.changeState(2);
+						return;
+					}
+				}
+				this.setIteratorDefault();
+				this.setConstructing(true);
+			}
+			this.playTapSound();
+			this.increaseTap(1);
+			this.drawObjectComponent();
+			// this.updateTotalRectText();
+			// console.log(this.getConstructingProgress());
+			if (this.buildObjectComplete()) {
+				this.memorizePlacement();
+				this.setConstructing(false);
+			}
+		} else if (this.state == 2) {
+			this.summarize();
+			this.changeState(3);
+		} else if (this.state == 3) {
+			this.changeState(2);
+		}
+	}
+
+	setup() {
+		this.setTheme("minimal");
+		this.buildWorld();
+		this.playGuide();
+	}
+
+	runMobile() {
+		this.setup();
+		setInterval(() => {
+			console.log("checking");
+			if (screen.width > screen.height) {
+				this.removeAxisGuide();
+			} else {
+				this.axisGuide();
+			}
+		}, 500);
+
+
+		let holdThreshold = 1000; // Define the duration threshold in milliseconds for a hold
+		let holdStart;
+		let intervalID;
+		document.addEventListener("touchstart", (Event) => {
+			console.log("start");
+			holdStart = Date.now(); // Record the start time of touch
+			console.log(Event);
+			intervalID = setInterval(() => {
+				console.log("running");
+				this.handleEvent(Event);
+			}, 500);
+		});
+
+		document.addEventListener("touchmove", (Event) => {
+			Event.preventDefault(); // Prevent scrolling while holding
+		});
+
+		document.addEventListener("touchend", (Event) => {
+			clearInterval(intervalID); // Clear the interval
+			console.log("wat");
+			let holdTime = Date.now() - holdStart; // Calculate the duration of touch
+			if (holdTime >= holdThreshold) {
+				console.log("Hold event detected!");
+				// Add your code here to handle the hold event
+			}
+		});
+	}
+
+	runPC() {
+		this.setup();
+		document.addEventListener("click", (Event) => {
+			this.handleEvent(Event);
+		});
+	}
+
+	run() {
+		if (this.mobile) {
+			this.runMobile();
+		} else {
+			this.runPC();
+		}
+	}
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-	const game = new GameDriver({
+	function isMobileDevice() {
+		return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+			navigator.userAgent
+		);
+	}
+
+	let gameProp = {
 		randomFactor: 100,
 		gameBits: 16,
 		coreRow: 6,
@@ -1147,44 +1324,15 @@ document.addEventListener("DOMContentLoaded", function () {
 		skyBoxRatio: 2,
 		earthBoxRatio: 1,
 		buildSpeed: 2,
-	});
-	game.setTheme("minimal");
-	game.buildWorld();
-	document.addEventListener("click", (Event) => {
-		if (game.state == 0) {
-			if (!game.isConstructing()) {
-				game.getRandomObject();
-				game.resetCountRandom();
-				while (!game.canPlace()) {
-					game.getRandomObject();
-					if (game.increaseAndCheckMaxRandom()) {
-						game.changeState(2);
-						return;
-					}
-				}
-				game.setIteratorDefault();
-				game.setConstructing(true);
-			}
-			game.playTapSound();
-			game.increaseTap(1);
-			game.drawObjectComponent();
-			// game.updateTotalRectText();
-			// console.log(game.getConstructingProgress());
-			if (game.buildObjectComplete()) {
-				game.memorizePlacement();
-				game.changeState(1);
-				game.setConstructing(false);
-			}
-		}
-		if (game.state == 1) {
-			game.changeState(0);
-		}
-		if (game.state == 2) {
-			game.summarize();
-			game.changeState(3);
-		}
-		if (game.state == 3) {
-			game.changeState(2);
-		}
-	});
+	};
+
+	if (isMobileDevice()) {
+		console.log("User is on a mobile device");
+		gameProp.mobile = true;
+	} else {
+		gameProp.mobile = false;
+	}
+
+	const game = new GameDriver(gameProp);
+	game.run();
 });
