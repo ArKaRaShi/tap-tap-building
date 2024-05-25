@@ -87,3 +87,15 @@ main {
 	width: 40%;
 	height: 20%;
 }
+
+@media screen and (max-width: 400px) {
+	html {
+		font-size: 10px;
+	}
+}
+
+@media screen and (max-width: 325px) {
+	html {
+		font-size: 8px;
+	}
+}
